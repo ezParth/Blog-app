@@ -6,11 +6,16 @@ export default function RegisterPage() {
 
   async function register (e){
     e.preventDefault();
-    await fetch('http://localhost:3000/register', {
+    const response = await fetch('http://localhost:3000/register', {
         method: "POST",
         body: JSON.stringify({username, password}),
         headers: {"Content-Type": "application/json"}
     })
+    if(response.status === 200){
+      alert(`Hello ${username} Registration Successfull :)`)
+    }else{
+      alert("registration Failed :(")
+    }
   }
 
   return (
@@ -32,3 +37,6 @@ export default function RegisterPage() {
     </form>
   );
 }
+
+
+//Try HMAC Authentication --> To avoid showing Password in the Networks Tabs
