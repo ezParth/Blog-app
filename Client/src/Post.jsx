@@ -13,7 +13,7 @@ export default function Post(){
             <a href="" className="author">
               Parth Singh
             </a>
-            <time datetime="">2023-01-06 16:45</time>
+            <time dateTime="">2023-01-06 16:45</time>
           </p>
           <p className="summary">
             The National Institute of Standards and Technology (NIST), the U.S.
