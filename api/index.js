@@ -4,11 +4,12 @@ const cors = require("cors");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 const app = express();
-const jwt = require("jsonwebtoken");
-const User = require("./model/User");
+// const jwt = require("jsonwebtoken");
+// const User = require("./model/User");
 const port = 3000;
+const AuthRouter = require("./router/AuthRouter");
 
-app.use(cors({credentials: true, origin:"http://localhost:5173"}));
+app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 const secret = process.env.TOKEN;
 // app.use((req, res, next) => {
 //     res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
@@ -17,7 +18,7 @@ const secret = process.env.TOKEN;
 //     next();
 // });
 
-app.use(express.json());
+app.use(express.json()); //express.json() is a global middleware. It applies to all routes handled by your Express app.
 
 //Connection
 mongoose
@@ -25,9 +26,9 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log("MongoError", err));
 
+app.use("/", AuthRouter);
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
-
 
 //learn CORS and header/credentials/cookies and how to handle cookies.
 
@@ -80,14 +81,6 @@ The response consists of:
 
 --> A response body: This contains the data you want to send back to the client (in your case, the userDoc).
  */
-
-
-
-
-
-
-
-
 
 /*
 app.post("/register", async (req, res) => {
