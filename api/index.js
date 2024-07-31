@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
 const port = 3000;
-const AuthRouter = require("./router/AuthRouter");
+const router = require("./router/router");
 const cookieParser = require("cookie-parser")
 
 app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
@@ -17,7 +17,7 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log("MongoError", err));
 
-app.use("/", AuthRouter);
+app.use("/", router);
 
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
