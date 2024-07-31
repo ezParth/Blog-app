@@ -1,28 +1,18 @@
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default async function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  try {
-    const response = await axios.get("/data");
-    const users = response.data;
-    if (users) {
-      setIsLoggedIn(true);
-    }
-  } catch (error) {
-    console.log("Error in fetching data: ", error);
-  }
-  if (isLoggedIn) {
-    return (
-      <header>
-        <Link to="/" className="logo">
-          MyBlog
-        </Link>
-      </header>
-    );
-  }
+export default function Header() {
+  const [username, setUsername] = useState("");
+  useEffect(() => {
+    fetch("http://localhost:3000/profile", {
+      credentials: "include",
+    }).then((response) => {
+      response.json().then((userinfo) => {
+        setUsername(userinfo.username);
+      });
+    }); // you can use await here also
+  }, []);
 
   return (
     <header>
@@ -30,8 +20,18 @@ export default async function Header() {
         MyBlog
       </Link>
       <nav>
-        <Link to="/login">Login</Link>
-        <Link to="/register">Register</Link>
+        {username && (
+          <>
+            <Link to={"/create"}>Create new post</Link>
+            <a>Logout</a>
+          </>
+        )}
+        {!username && (
+          <>
+            <Link to="/login">Login</Link>
+            <Link to="/register">Register</Link>
+          </>
+        )}
       </nav>
     </header>
   );

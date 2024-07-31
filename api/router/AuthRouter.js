@@ -4,6 +4,7 @@ const User = require("../model/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const cookieParser = require('cookie-parser')
 
 const secret = process.env.TOKEN
 
@@ -47,6 +48,25 @@ Router.post("/login", async (req, res) => {
     }
   });
 
+  Router.get("/profile", (req, res) => {
+    const {token} = req.cookies;
+    jwt.verify(token, secret, {}, (err, info) => {
+        if(err) throw err;
+        res.json(info);
+    })
+})
+
   module.exports = Router;
 
+
+
+
+
+
+
+
+
+
   //Search for use of Router, in Youtube 
+
+  // learn a heck lot about cookies bro please
