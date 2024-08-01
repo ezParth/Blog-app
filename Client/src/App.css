@@ -103,3 +103,7 @@ form h1{
   text-align: center;
 }
 
+#Logout-link{
+  cursor: pointer;
+}
+

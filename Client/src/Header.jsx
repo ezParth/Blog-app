@@ -1,15 +1,18 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { UserContext } from "./UserContext";
 
 export default function Header() {
-  const [username, setUsername] = useState("");
+  // const [username, setUsername] = useState("");// we will use Context API here instead of passing in the username and password here directly
+  const {setUserInfo, userInfo} = useContext(UserContext)
   useEffect(() => {
     fetch("http://localhost:3000/profile", {
       credentials: "include",
     }).then((response) => {
-      response.json().then((userinfo) => {
-        setUsername(userinfo.username);
+      response.json().then((userInfo) => {
+        // setUsername(userinfo.username);
+        setUserInfo(userInfo)
       });
     }); // you can use await here also
   }, []);
@@ -19,8 +22,10 @@ export default function Header() {
       credentials: "include",
       method: "POST",
     })
-    setUsername(null)
+    setUserInfo(null);
   }
+
+  const username = userInfo?.username;// checking if userinfo is present or not, will help if logged out, it will not give an error 
 
   return (
     <header>
@@ -31,7 +36,7 @@ export default function Header() {
         {username && (
           <>
             <Link to={"/create"}>Create new post</Link>
-            <a onClick={logout}>Logout</a>
+            <a onClick={logout} id="Logout-link">Logout</a>
           </>
         )}
         {!username && (
