@@ -5,15 +5,16 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
-const multer = require('multer');
-const path = require('path')
-const fs = require('fs');
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+const post = require("../model/Post");
 
 // Router.use('/uploads', express.static(__dirname + '/uploads'));
 
-const uploadMiddleware  = multer({
-  dest: path.join(__dirname,'../uploads')
-})
+const uploadMiddleware = multer({
+  dest: path.join(__dirname, "../uploads"),
+});
 
 const secret = process.env.TOKEN;
 
@@ -48,7 +49,7 @@ Router.post("/login", async (req, res) => {
         if (err) throw err;
         res.cookie("token", token).json({
           id: user._id,
-          username,  
+          username,
         });
       });
     } else {
@@ -62,33 +63,42 @@ Router.post("/login", async (req, res) => {
 
 Router.get("/profile", (req, res) => {
   const { token } = req.cookies;
-  if(!token){
-    return res.status(401).json({error: "Token not provided"})
+  if (!token) {
+    return res.status(401).json({ error: "Token not provided" });
   }
-  try{
-  jwt.verify(token, secret, {}, (err, info) => {
-    if (err) throw err;
-    res.json(info);
-  });
-}
-catch(error){
-  console.log("Error verifying token: ", error);
-}
+  try {
+    jwt.verify(token, secret, {}, (err, info) => {
+      if (err) throw err;
+      res.json(info);
+    });
+  } catch (error) {
+    console.log("Error verifying token: ", error);
+  }
 });
 
+Router.post("/logout", (req, res) => {
+  res.cookie("token", "").json("ok");
+});
 
-Router.post('/logout', (req, res) => {
-  res.cookie('token', '').json("ok")
-})
+Router.post("/post", uploadMiddleware.single("file"), async (req, res) => {
+  console.log("Received", req.file);
+  const { originalname, path } = req.file;
+  const parts = originalname.split("."); // if 'myfile.txt' then == ['myfile','txt']
+  const ext = parts[parts.length - 1];
+  const newPath = path + "." + ext;
+  fs.renameSync(path, newPath);
 
-Router.post('/post', uploadMiddleware.single('file'), (req, res) => {
-  console.log('Received', req.file);
-  const {originalname} = req.file;
-  const parts = originalname.split(".")// if 'myfile.txt' then == ['myfile','txt']
-  const ext = parts[parts.length-1]
-  res.json({ext})
-  // res.json({files:req.file})
-})
+  const { title, summary, content } = req.body;
+  const postDoc = await post.create({
+    title,
+    summary,
+    content,
+    cover: newPath,
+  });
+  res.json(postDoc)
+  // res.json({ ext });
+  // res.json({ files: req.file });
+});
 
 module.exports = Router;
 

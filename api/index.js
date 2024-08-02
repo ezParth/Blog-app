@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
 const port = 3000;
+const post = require("./model/Post")
 const router = require("./router/router");
 const cookieParser = require("cookie-parser")
 
@@ -13,7 +14,7 @@ app.use(express.json()); //express.json() is a global middleware. It applies to 
 
 //Connection
 mongoose
-  .connect("mongodb://127.0.0.1:27017/Bloggee")
+  .connect("mongodb://127.0.0.1:27017/blog-apps")
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log("MongoError", err));
 
