@@ -5,6 +5,15 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
+const multer = require('multer');
+const path = require('path')
+const fs = require('fs');
+
+// Router.use('/uploads', express.static(__dirname + '/uploads'));
+
+const uploadMiddleware  = multer({
+  dest: path.join(__dirname,'../uploads')
+})
 
 const secret = process.env.TOKEN;
 
@@ -70,6 +79,15 @@ catch(error){
 
 Router.post('/logout', (req, res) => {
   res.cookie('token', '').json("ok")
+})
+
+Router.post('/post', uploadMiddleware.single('file'), (req, res) => {
+  console.log('Received', req.file);
+  const {originalname} = req.file;
+  const parts = originalname.split(".")// if 'myfile.txt' then == ['myfile','txt']
+  const ext = parts[parts.length-1]
+  res.json({ext})
+  // res.json({files:req.file})
 })
 
 module.exports = Router;

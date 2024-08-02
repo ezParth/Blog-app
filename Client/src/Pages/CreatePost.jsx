@@ -1,0 +1,85 @@
+import { useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, false] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [
+      { list: "ordered" },
+      { list: "bullet" },
+      { indent: "-1" },
+      { indent: "+1" },
+    ],
+    ["link", "image"],
+    ["clean"],
+  ],
+};
+
+const format = [
+  "header",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "blockquote",
+  "list",
+  "bullet",
+  "indent",
+  "link",
+  "image",
+];
+export default function CreatePost() {
+  const [title, setTitle] = useState("");
+  const [summary, setSummary] = useState("");
+  const [content, setContent] = useState("");
+  const [files, setFiles] = useState([]);
+  async function createNewPost(e) {
+    const data = new FormData(); //FormData is a built-in JavaScript object that allows you to create and manage data in the format of a set of key-value pairs.
+    data.set("title", title);
+    data.set("summary", summary);
+    data.set("content", content);
+    data.set("file", files[0])
+    e.preventDefault();
+    const response = await fetch("http://localhost:3000/post", {
+      method: "POST",
+      body: data,
+    });
+    console.log(await response.json())
+  }
+
+  return (
+    <form onSubmit={createNewPost} encType="multipart/form-data">
+      <input
+        type="title"
+        placeholder={"title"}
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <input
+        type="summary"
+        placeholder={"summary"}
+        value={summary}
+        onChange={(e) => setSummary(e.target.value)}
+      />
+      <input type="file"  onChange={e => setFiles(e.target.files)}/>
+      <ReactQuill
+        value={content}
+        modules={modules}
+        formats={format}
+        onChange={(newValue) => setContent(newValue)}
+      />
+      <button style={{ marginTop: "5px" }}>Create Post</button>
+    </form>
+  );
+}
+
+// build a text editor project
+
+/*
+Why Use FormData?:
+> When sending data to a server (e.g., via an API request), using FormData simplifies the process.
+> It automatically handles encoding the data (e.g., URL encoding) and formatting it correctly for the request.
+> Additionally, it supports file uploads, which regular JSON objects do not.
+*/

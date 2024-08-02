@@ -98,7 +98,7 @@ button{
   padding: 7px 0;
 }
 
-form h1{
+form.login h1, form.register h1{
   font-family: sans-serif;
   text-align: center;
 }
@@ -106,4 +106,3 @@ form h1{
 #Logout-link{
   cursor: pointer;
 }
-
