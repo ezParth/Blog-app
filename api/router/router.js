@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const Router = express.Router();
 const User = require("../model/User");
 const bcrypt = require("bcrypt");
@@ -9,7 +10,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const post = require("../model/Post");
-Router.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+Router.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 const uploadMiddleware = multer({
   dest: path.join(__dirname, "../uploads"),
@@ -114,13 +115,20 @@ Router.post("/post", uploadMiddleware.single("file"), async (req, res) => {
   }
 });
 
-
 Router.get("/post", async (req, res) => {
-  const posts = await post.find()
-  .populate("author", ["username"])
-  .sort({createdAt: -1})// descending order
-  .limit(20)//only 20 posts
+  const posts = await post
+    .find()
+    .populate("author", ["username"])
+    .sort({ createdAt: -1 }) // descending order
+    .limit(20); //only 20 posts
   res.json(posts);
+});
+
+Router.get("/post/:id", async (req, res) => {
+  // res.json(req.params);
+  const {id} = req.params;
+  const postDoc = await post.findById(id).populate('author',['username']);//populate will give us all the info about the author, if we do username then it will give all the info about the username inside the author
+  res.json(postDoc)
 });
 
 module.exports = Router;

@@ -53,6 +53,11 @@ div.post div.content h2{
   font: 1.8 rem;
 }
 
+div.post div.content a{
+  text-decoration: none;
+  color: inherit;
+}
+
 div.post p.info{
   margin: 6px 0;
   color: #888;

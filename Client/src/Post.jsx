@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import {Link} from 'react-router-dom'
 
 export default function Post({
+  _id,
   title,
   summary,
   cover,
@@ -12,12 +13,12 @@ export default function Post({
   return (
     <div className="post">
       <div className="image">
-        <Link to={"/post/id"}>
+        <Link to={`/post/${_id}`}>
           <img src={`http://localhost:3000${cover}`} alt="img" />
         </Link>
       </div>
       <div className="content">
-        <Link to={"/post/id"}>
+        <Link to={`/post/${_id}`}>
           <h2>{title}</h2>
         </Link>
         <p className="info">
