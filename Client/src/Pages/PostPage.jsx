@@ -27,7 +27,7 @@ export default function PostPage() {
       </div>
       <h1>{postInfo.title}</h1>
 
-      <div dangerouslySetInnerHTML={{html: postInfo.content}} />
+      <div dangerouslySetInnerHTML={{__html: postInfo.content}} className="post-content"/>
       
     </div>
   );
