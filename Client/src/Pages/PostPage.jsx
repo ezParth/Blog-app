@@ -29,7 +29,6 @@ export default function PostPage() {
       <div className="image">
         <img src={`http://localhost:3000${postInfo.cover}`} alt="img" />
       </div>
-      <h1>{postInfo.title}</h1>
 
       <div dangerouslySetInnerHTML={{__html: postInfo.content}} className="post-content"/>
       
