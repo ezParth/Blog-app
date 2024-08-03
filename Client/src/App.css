@@ -203,3 +203,18 @@ div.post-page div.image img {
   gap: 20px;
   padding: 20px;
 }
+
+div.post-page time{
+  text-align: center;
+  display: block;
+}
+
+div.post-page h1{
+  text-align: center;
+  margin: 10px 0px 5px;
+}
+
+div.post-page a{
+  color: #c3feff;
+  text-decoration: underline;
+}
