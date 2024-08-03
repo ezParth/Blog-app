@@ -14,7 +14,7 @@ app.use(express.json()); //express.json() is a global middleware. It applies to 
 
 //Connection
 mongoose
-  .connect("mongodb://127.0.0.1:27017/blog-apps")
+  .connect("mongodb://127.0.0.1:27017/blog-apps",{ bufferCommands: false })
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log("MongoError", err));
 

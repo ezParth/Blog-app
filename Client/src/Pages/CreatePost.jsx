@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import {Navigate} from 'react-router-dom'
 
 const modules = {
   toolbar: [
@@ -35,6 +36,7 @@ export default function CreatePost() {
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
   const [files, setFiles] = useState([]);
+  const [redirect, setReditect] = useState(false);
   async function createNewPost(e) {
     const data = new FormData(); //FormData is a built-in JavaScript object that allows you to create and manage data in the format of a set of key-value pairs.
     data.set("title", title);
@@ -45,8 +47,15 @@ export default function CreatePost() {
     const response = await fetch("http://localhost:3000/post", {
       method: "POST",
       body: data,
+      credentials: "include"// this will snd jwt tokens and other information which will help us to find the users
     });
-    console.log(await response.json())
+    if(response.ok){
+      setReditect(true)
+    }
+  }
+
+  if(redirect){
+    return <Navigate to={"/"} />
   }
 
   return (

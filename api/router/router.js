@@ -9,6 +9,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const post = require("../model/Post");
+const { errorMonitor } = require("stream");
 
 // Router.use('/uploads', express.static(__dirname + '/uploads'));
 
@@ -50,7 +51,7 @@ Router.post("/login", async (req, res) => {
         res.cookie("token", token).json({
           id: user._id,
           username,
-        });
+        });// this is what we are sending inside cookies
       });
     } else {
       return res.status(401).json({ error: "Wrong password" });
@@ -88,16 +89,34 @@ Router.post("/post", uploadMiddleware.single("file"), async (req, res) => {
   const newPath = path + "." + ext;
   fs.renameSync(path, newPath);
 
-  const { title, summary, content } = req.body;
-  const postDoc = await post.create({
-    title,
-    summary,
-    content,
-    cover: newPath,
-  });
-  res.json(postDoc)
-  // res.json({ ext });
-  // res.json({ files: req.file });
+  try {
+    const { token } = req.cookies;
+    jwt.verify(token, secret, {}, async (err, info) => {
+      if (err) {
+        console.error("Token verification failed or user does not exist.");
+        return res.status(401).json({ error: "Invalid token, please log in." });
+      }
+
+      const { title, summary, content } = req.body;
+      const postDoc = await post.create({
+        title,
+        summary,
+        content,
+        cover: newPath,
+        author: info.id,
+      });
+      res.json(postDoc);
+    });
+  } catch (err) {
+    console.error("Error during post creation:", err);
+    res.status(500).json({ error: "Post creation failed" });
+  }
+});
+
+
+Router.get("/post", async (req, res) => {
+  const posts = await post.find().populate('User');
+  res.json(posts);
 });
 
 module.exports = Router;
