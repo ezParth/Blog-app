@@ -9,7 +9,6 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const post = require("../model/Post");
-const { errorMonitor } = require("stream");
 
 // Router.use('/uploads', express.static(__dirname + '/uploads'));
 
@@ -51,7 +50,7 @@ Router.post("/login", async (req, res) => {
         res.cookie("token", token).json({
           id: user._id,
           username,
-        });// this is what we are sending inside cookies
+        }); // this is what we are sending inside cookies
       });
     } else {
       return res.status(401).json({ error: "Wrong password" });
@@ -113,9 +112,8 @@ Router.post("/post", uploadMiddleware.single("file"), async (req, res) => {
   }
 });
 
-
 Router.get("/post", async (req, res) => {
-  const posts = await post.find().populate('User');
+  const posts = await post.find().populate("author", ["username"]);
   res.json(posts);
 });
 
