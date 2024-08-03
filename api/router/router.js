@@ -9,8 +9,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const post = require("../model/Post");
-
-// Router.use('/uploads', express.static(__dirname + '/uploads'));
+Router.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 const uploadMiddleware = multer({
   dest: path.join(__dirname, "../uploads"),
@@ -85,8 +84,11 @@ Router.post("/post", uploadMiddleware.single("file"), async (req, res) => {
   const { originalname, path } = req.file;
   const parts = originalname.split("."); // if 'myfile.txt' then == ['myfile','txt']
   const ext = parts[parts.length - 1];
-  const newPath = path + "." + ext;
-  fs.renameSync(path, newPath);
+  const newFilename = `${path.split("\\").pop()}.${ext}`; // Ensure correct filename
+  const newPath = path + `.${ext}`; // Path for renaming file
+  const urlPath = `/uploads/${newFilename}`; // URL path to access the file
+
+  fs.renameSync(path, newPath); // Rename file
 
   try {
     const { token } = req.cookies;
@@ -101,7 +103,7 @@ Router.post("/post", uploadMiddleware.single("file"), async (req, res) => {
         title,
         summary,
         content,
-        cover: newPath,
+        cover: urlPath,
         author: info.id,
       });
       res.json(postDoc);
@@ -112,8 +114,12 @@ Router.post("/post", uploadMiddleware.single("file"), async (req, res) => {
   }
 });
 
+
 Router.get("/post", async (req, res) => {
-  const posts = await post.find().populate("author", ["username"]);
+  const posts = await post.find()
+  .populate("author", ["username"])
+  .sort({createdAt: -1})// descending order
+  .limit(20)//only 20 posts
   res.json(posts);
 });
 

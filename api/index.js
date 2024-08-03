@@ -8,6 +8,7 @@ const router = require("./router/router");
 const cookieParser = require("cookie-parser")
 
 app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
+// app.use('/uploads', express.static(__dirname + '/uploads'))
 
 app.use(cookieParser());
 app.use(express.json()); //express.json() is a global middleware. It applies to all routes handled by your Express app.
