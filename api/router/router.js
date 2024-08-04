@@ -115,6 +115,64 @@ Router.post("/post", uploadMiddleware.single("file"), async (req, res) => {
   }
 });
 
+Router.put("/post", uploadMiddleware.single("file"), async (req, res) => {
+  let newPath = null;
+  let urlPath = null;
+
+  if (req.file) {
+    const { originalname, path } = req.file;
+    const parts = originalname.split(".");
+    const ext = parts[parts.length - 1];
+    const newFilename = `${path.split("\\").pop()}.${ext}`;
+    newPath = `${path}.${ext}`;
+    urlPath = `/uploads/${newFilename}`;
+
+    // Rename the file
+    fs.renameSync(path, newPath);
+  }
+
+  const { token } = req.cookies;
+
+  jwt.verify(token, secret, {}, async (err, info) => {
+    if (err) {
+      console.error("Token verification failed or user does not exist.");
+      return res.status(401).json({ error: "Invalid token, please log in." });
+    }
+
+    try {
+      const { id, title, summary, content } = req.body;
+      const postDoc = await post.findById(id);
+
+      if (!postDoc) {
+        return res.status(404).json({ error: "Post not found." });
+      }
+
+      const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+
+      if (!isAuthor) {
+        return res.status(400).json({ error: "You are not the author." });
+      }
+
+      // Update the post fields
+      postDoc.title = title;
+      postDoc.summary = summary;
+      postDoc.content = content;
+      if (newPath) {
+        postDoc.cover = urlPath;
+      }
+
+      // Save the updated post document
+      await postDoc.save();
+
+      res.json(postDoc);
+    } catch (error) {
+      console.error("Error updating post:", error);
+      res.status(500).json({ error: "Failed to update post." });
+    }
+  });
+});
+
+
 Router.get("/post", async (req, res) => {
   const posts = await post
     .find()
@@ -126,9 +184,9 @@ Router.get("/post", async (req, res) => {
 
 Router.get("/post/:id", async (req, res) => {
   // res.json(req.params);
-  const {id} = req.params;
-  const postDoc = await post.findById(id).populate('author',['username']);//populate will give us all the info about the author, if we do username then it will give all the info about the username inside the author
-  res.json(postDoc)
+  const { id } = req.params;
+  const postDoc = await post.findById(id).populate("author", ["username"]); //populate will give us all the info about the author, if we do username then it will give all the info about the username inside the author
+  res.json(postDoc);
 });
 
 module.exports = Router;

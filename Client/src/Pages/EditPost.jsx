@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Editor from "../Editor";
 import { useParams } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 export default function EditPost() {
   const { id } = useParams();
@@ -18,25 +19,29 @@ export default function EditPost() {
         setSummary(postInfo.summary);
       });
     });
-  }, []);
-
+  }, [])
   async function updatePost(e) {
     e.preventDefault();
     const data = new FormData();
     data.set("title", title);
     data.set("summary", summary);
+    data.set("content", content);
+    data.set("id", id);
     if (files?.[0]) {
       data.set("file", files?.[0]);
     }
-    await fetch("http://localhost:3000/post", {
+    const response = await fetch("http://localhost:3000/post", {
       method: "PUT",
       body: data,
+      credentials: "include",
     });
-    setReditect(true)
+    if (response.ok) {
+      setReditect(true);
+    }
   }
 
   if (redirect) {
-    return <Navigate to={"/post/"+id} />;
+    return <Navigate to={"/post/" + id} />;
   }
 
   return (
