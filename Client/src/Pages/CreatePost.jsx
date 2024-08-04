@@ -2,41 +2,14 @@ import { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import {Navigate} from 'react-router-dom'
+import Editor from "../Editor";
 
-const modules = {
-  toolbar: [
-    [{ header: [1, 2, false] }],
-    ["bold", "italic", "underline", "strike", "blockquote"],
-    [
-      { list: "ordered" },
-      { list: "bullet" },
-      { indent: "-1" },
-      { indent: "+1" },
-    ],
-    ["link", "image"],
-    ["clean"],
-  ],
-};
-
-const format = [
-  "header",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "list",
-  "bullet",
-  "indent",
-  "link",
-  "image",
-];
 export default function CreatePost() {
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
-  const [files, setFiles] = useState([]);
-  const [redirect, setReditect] = useState(false);
+  const [files, setFiles] = useState('');
+  const [redirect, setReditect] = useState('');
   async function createNewPost(e) {
     const data = new FormData(); //FormData is a built-in JavaScript object that allows you to create and manage data in the format of a set of key-value pairs.
     data.set("title", title);
@@ -73,12 +46,7 @@ export default function CreatePost() {
         onChange={(e) => setSummary(e.target.value)}
       />
       <input type="file"  onChange={e => setFiles(e.target.files)}/>
-      <ReactQuill
-        value={content}
-        modules={modules}
-        formats={format}
-        onChange={(newValue) => setContent(newValue)}
-      />
+      <Editor value={content} onChange={setContent} />
       <button style={{ marginTop: "5px" }}>Create Post</button>
     </form>
   );
